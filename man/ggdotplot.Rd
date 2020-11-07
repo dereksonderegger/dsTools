@@ -4,14 +4,30 @@
 \alias{ggdotplot}
 \title{Creates a Dotplot}
 \usage{
-ggdotplot(x, binwidth = NULL, dotsize = 0.75)
+ggdotplot(
+  x,
+  binwidth = NULL,
+  dotsize = 1,
+  yheight = NULL,
+  ybreaks = NULL,
+  origin = NULL
+)
 }
 \arguments{
 \item{x}{A vector of numeric values}
 
-\item{binwidth}{The width of a column of dots}
+\item{binwidth}{The width of a column of dots. If blank, we'll default
+to using Sturges' rule.}
 
-\item{dotsize}{The relative size of a dot. Smaller mean less dot overlap.}
+\item{dotsize}{The relative size of a dot. Only is used for separating columns
+of dots. Dots always touch vertically. Default is touching columns.}
+
+\item{yheight}{The maximum height of the graph, on the count scale.}
+
+\item{ybreaks}{The labeled breaks on the y-axis. On the count scale.}
+
+\item{origin}{Where should the center of a stack of dots be? You may select any
+column of dots to specify.}
 }
 \description{
 The scaling for ggplot2::dotplot() is unfortunately designed
@@ -20,7 +36,29 @@ resampling-based statistics course. It would be very nice to
 be able to make a geom_dotplot() function that respected the
 y-axis.
 }
+\details{
+The reason dot plots are hard is because a dot is necessarily a
+fixed ratio in the x and y direction. So to make them look circular
+in change scales, we can end up with an oddly proportion graph. Perhaps
+wide and short, perhaps tall and narrow. It is up to the user to specify
+the binwidths so that the resulting graph is aesthetically pleasing.
+}
 \examples{
-ggdotplot( rnorm(100) )
+set.seed(8675309)
+x <- rnorm(100)
+ggdotplot( x ) +
+  annotate('text', x=1.5, y=.75, label='Text to write')
+ggdotplot( x, binwidth=0.1 )
+
+# Can set bins width and centers.
+ggdotplot(x, origin=-2, binwidth=.25)
+ggdotplot( x, binwidth=.25, origin=.1) # ugly and messes up height calculation
+ggdotplot( x, binwidth=1, origin=1, dotsize=.8)
+
+# Can add space at the top of the graph by setting yheight on the count scale.
+ggdotplot( c(1,1,2:5), yheight=6)
+
+# Setting the y-axis major breaks
+ggdotplot( x, ybreaks=0:15 )
 
 }
